@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Todos</string>
+    <string name="todo_detail">Todo detail</string>
+    <string name="todo_date">%s on %s</string>
+    <string name="todo_add_button">Todo add button</string>
+    <string name="name_req">Name <font color='#FF0000'>*</font></string>
+    <string name="category_req">Category <font color='#FF0000'>*</font></string>
+    <string name="priority_req">Priority <font color='#FF0000'>*</font></string>
+    <string name="name">Name</string>
+    <string name="low">low</string>
+    <string name="normal">normal</string>
+    <string name="high">high</string>
+    <string name="category">Category</string>
+    <string name="todo_description">Description</string>
+    <string name="save_action">save</string>
+    <string name="delete">delete</string>
+    <string name="edit_todo_button">Edit</string>
+</resources>

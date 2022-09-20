@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/todosListFragment">
+
+    <fragment
+        android:id="@+id/todosListFragment"
+        android:name="com.example.todos_list.ui.TodosListFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_todos_list" >
+        <action
+            android:id="@+id/action_todosListFragment_to_addOrEditTodoFragment"
+            app:destination="@id/addOrEditTodoFragment" />
+        <action
+            android:id="@+id/action_todosListFragment_to_todoDetailFragment"
+            app:destination="@id/todoDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addOrEditTodoFragment"
+        android:name="com.example.todos_list.ui.AddOrEditTodoFragment"
+        android:label="{title}"
+        tools:layout="@layout/fragment_add_or_edit_todo" >
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="todo_id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_addOrEditTodoFragment_to_todosListFragment"
+            app:destination="@id/todosListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoDetailFragment"
+        android:name="com.example.todos_list.ui.TodoDetailFragment"
+        android:label="@string/todo_detail"
+        tools:layout="@layout/fragment_todo_detail" >
+        <argument
+            android:name="todo_id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_todoDetailFragment_to_todosListFragment"
+            app:destination="@id/todosListFragment" />
+        <action
+            android:id="@+id/action_todoDetailFragment_to_addOrEditTodoFragment"
+            app:destination="@id/addOrEditTodoFragment" />
+    </fragment>
+</navigation>
