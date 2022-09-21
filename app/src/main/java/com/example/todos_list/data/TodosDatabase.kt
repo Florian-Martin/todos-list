@@ -11,6 +11,7 @@ import com.example.todos_list.model.TodoCategory
 abstract class TodosDatabase : RoomDatabase() {
 
     abstract fun todoDao(): TodoDao
+    abstract fun todoCategoryDao(): TodoCategoryDao
 
     companion object {
         @Volatile
@@ -30,5 +31,4 @@ abstract class TodosDatabase : RoomDatabase() {
             }
         }
     }
-
 }

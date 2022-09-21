@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.todos_list.viewmodel.TodoViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -85,21 +91,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/green"
-                android:text="@string/low"/>
+                android:text="@string/low"
+                android:checked="@{viewModel.todoPriority.equals(@string/low)}"
+                android:onClick="@{() -> viewModel.setTodoPriority(@string/low)}"/>
 
             <RadioButton
                 android:id="@+id/todo_medium_priority_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/orange"
-                android:text="@string/normal"/>
+                android:text="@string/normal"
+                android:checked="@{viewModel.todoPriority.equals(@string/normal)}"
+                android:onClick="@{() -> viewModel.setTodoPriority(@string/normal)}"/>
 
             <RadioButton
                 android:id="@+id/todo_high_priority_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/red"
-                android:text="@string/high"/>
+                android:text="@string/high"
+                android:checked="@{viewModel.todoPriority.equals(@string/high)}"
+                android:onClick="@{() -> viewModel.setTodoPriority(@string/high)}"/>
         </RadioGroup>
 
         <com.google.android.material.button.MaterialButton

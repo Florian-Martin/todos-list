@@ -15,4 +15,6 @@
     <string name="save_action">save</string>
     <string name="delete">delete</string>
     <string name="edit_todo_button">Edit</string>
+    <string name="add_fragment_title">Add a Todo</string>
+    <string name="set_a_name">Give your todo a name !</string>
 </resources>
