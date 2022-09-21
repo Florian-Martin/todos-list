@@ -63,6 +63,31 @@ class TodoViewModel(
     fun getTodoAndCategoryById(id: Int): LiveData<TodoAndCategory> {
         return todoDao.getTodoAndCategoryById(id).asLiveData()
     }
+
+    fun deleteTodo(todo: Todo) {
+        viewModelScope.launch {
+            todoDao.deleteTodo(todo)
+        }
+    }
+
+    fun updateTodo(id: Int, name: String, description: String, category: String) {
+        val updatedTodo = getUpdatedTodo(id, name, description, category)
+        viewModelScope.launch {
+            todoDao.updateTodo(updatedTodo)
+        }
+    }
+
+    private fun getUpdatedTodo(id: Int, name: String, description: String, category: String): Todo {
+        return Todo(
+            id,
+            name,
+            description,
+            category,
+            date = calendarToString(Calendar.getInstance(), "yyyy-MM-dd"),
+            1,
+            todoPriority.value!!
+        )
+    }
 }
 
 

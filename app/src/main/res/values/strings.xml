@@ -17,4 +17,9 @@
     <string name="edit_todo_button">Edit</string>
     <string name="add_fragment_title">Add a Todo</string>
     <string name="set_a_name">Give your todo a name !</string>
+    <string name="edit_fragment_title">Edit a Todo</string>
+    <string name="confirm_delete_alert">Todo delete</string>
+    <string name="delete_question">Do you really want to delete this Todo ?</string>
+    <string name="no">no</string>
+    <string name="yes">yes</string>
 </resources>

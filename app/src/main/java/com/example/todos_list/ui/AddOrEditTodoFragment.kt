@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -13,8 +14,10 @@ import com.example.todos_list.R
 import com.example.todos_list.TodoApplication
 import com.example.todos_list.ui.AddOrEditTodoFragmentArgs
 import com.example.todos_list.databinding.FragmentAddOrEditTodoBinding
+import com.example.todos_list.model.TodoAndCategory
 import com.example.todos_list.viewmodel.TodoViewModel
 import com.example.todos_list.viewmodel.TodoViewModelFactory
+import java.util.*
 
 class AddOrEditTodoFragment : Fragment() {
 
@@ -48,6 +51,7 @@ class AddOrEditTodoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = todoViewModel
+        val id = navigationArgs.todoId
 
         // Populating categories spinner
         todoViewModel.allTodoCategories.observe(this.viewLifecycleOwner) { todosCategories ->
@@ -66,6 +70,15 @@ class AddOrEditTodoFragment : Fragment() {
             }
         }
         binding.todoSaveButton.setOnClickListener { addNewTodo() }
+
+        // Editing case
+        if (id > 0) {
+            todoViewModel.getTodoAndCategoryById(id).observe(this.viewLifecycleOwner) {
+                bind(it)
+            }
+        } else { // Creating case
+            binding.todoSaveButton.setOnClickListener { addNewTodo() }
+        }
     }
 
 
@@ -94,6 +107,31 @@ class AddOrEditTodoFragment : Fragment() {
             binding.todoCategorySpinner.selectedItemId.toString(),
             binding.todoPriorityRadioGroup.checkedRadioButtonId
         )
+    }
+
+    private fun bind(todoAndCategory: TodoAndCategory) {
+           binding.apply {
+            todoCategorySpinner.setSelection(categoryOptions.indexOf(todoAndCategory.todo.categoryName))
+            todoNameEdit.setText(todoAndCategory.todo.name, TextView.BufferType.SPANNABLE)
+            todoDescriptionEdit.setText(
+                todoAndCategory.todo.description,
+                TextView.BufferType.SPANNABLE
+            )
+            todoSaveButton.setOnClickListener { updateTodo(todoAndCategory.todo.id) }
+        }
+    }
+
+    private fun updateTodo(todoId: Int) {
+        if (isTodoValid()) {
+            setFieldsError(false)
+            todoViewModel.updateTodo(
+                todoId,
+                binding.todoNameEdit.text.toString(),
+                binding.todoDescriptionEdit.text.toString(),
+                binding.todoCategorySpinner.selectedItem.toString())
+            val direction = AddOrEditTodoFragmentDirections.actionAddOrEditTodoFragmentToTodosListFragment()
+            findNavController().navigate(direction)
+        }
     }
 
     private fun setFieldsError(error: Boolean) {
