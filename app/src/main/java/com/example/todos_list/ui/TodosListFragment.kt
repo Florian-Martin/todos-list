@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.todos_list.R
 import com.example.todos_list.TodoApplication
 import com.example.todos_list.adapter.TodoAdapter
 import com.example.todos_list.databinding.FragmentTodosListBinding
+import com.example.todos_list.gesture.SwipeToDeleteCallback
 import com.example.todos_list.viewmodel.TodoViewModel
 import com.example.todos_list.viewmodel.TodoViewModelFactory
 
@@ -22,6 +25,7 @@ class TodosListFragment : Fragment() {
      *************************************/
     private var _binding: FragmentTodosListBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: TodoAdapter
 
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModelFactory(
@@ -45,13 +49,15 @@ class TodosListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TodoAdapter {
+        adapter = TodoAdapter {
             val direction =
                 TodosListFragmentDirections.actionTodosListFragmentToTodoDetailFragment(it.todo.id)
             findNavController().navigate(direction)
         }
 
         binding.todosListRecyclerView.adapter = adapter
+        swipeToDeleteHandling()
+
         todoViewModel.allTodosAndCategory.observe(this.viewLifecycleOwner) { todos ->
             todos.let {
                 adapter.submitList(it)
@@ -68,5 +74,22 @@ class TodosListFragment : Fragment() {
                 )
             findNavController().navigate(direction)
         }
+    }
+
+    /**************************************
+     * FUNCTIONS
+     *************************************/
+    private fun swipeToDeleteHandling() {
+        val swipeTodDeleteCallback = object : SwipeToDeleteCallback(requireContext().applicationContext) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.layoutPosition
+                val todoToDelete = adapter.currentList[position]
+                if (direction == ItemTouchHelper.LEFT) {
+                    todoViewModel.deleteTodo(todoToDelete.todo)
+                }
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeTodDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(binding.todosListRecyclerView)
     }
 }
