@@ -48,12 +48,27 @@ class TodoViewModel(
             edited = 0,
             priority = todoPriority.value!!
         )
-
-        viewModelScope.launch {
-            todoDao.insertTodo(newTodo)
-        }
-
+        viewModelScope.launch { todoDao.insertTodo(newTodo) }
         setTodoPriority("normal")
+    }
+
+    fun restoreTodo(
+        todoName: String,
+        todoDescription: String?,
+        todoCategory: String,
+        todoDate: String,
+        edited: Int,
+        todoPriority: String
+    ) {
+        val todoToRestore = Todo(
+            name = todoName,
+            description = todoDescription,
+            categoryName = todoCategory,
+            date = todoDate,
+            edited = edited,
+            priority = todoPriority
+        )
+        viewModelScope.launch { todoDao.insertTodo(todoToRestore) }
     }
 
     fun isTodoValid(todoName: String, todoCategory: String, radioButtonId: Int): Boolean {

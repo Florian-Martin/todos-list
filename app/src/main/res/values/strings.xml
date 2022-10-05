@@ -22,4 +22,6 @@
     <string name="delete_question">Do you really want to delete this Todo ?</string>
     <string name="no">no</string>
     <string name="yes">yes</string>
+    <string name="delete_snackbar_msg">Todo deleted !</string>
+    <string name="undo">Undo</string>
 </resources>
