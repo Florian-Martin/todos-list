@@ -29,6 +29,7 @@ class TodoDetailFragment : Fragment() {
     private lateinit var mTodo: TodoAndCategory
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModelFactory(
+            requireActivity().application,
             (activity?.application as TodoApplication).database.todoDao(),
             (activity?.application as TodoApplication).database.todoCategoryDao()
         )

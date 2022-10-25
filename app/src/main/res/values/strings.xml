@@ -24,4 +24,6 @@
     <string name="yes">yes</string>
     <string name="delete_snackbar_msg">Todo deleted !</string>
     <string name="undo">Undo</string>
+    <string name="reminder">Set a reminder ?</string>
+    <string name="set_a_valid_reminder">Reminder must be scheduled at least 1 minute later !</string>
 </resources>

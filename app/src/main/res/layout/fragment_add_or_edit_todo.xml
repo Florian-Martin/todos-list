@@ -114,6 +114,29 @@
                 android:onClick="@{() -> viewModel.setTodoPriority(@string/high)}"/>
         </RadioGroup>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reminder_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:hint="@string/reminder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/todo_priority_radio_group"
+            app:layout_constraintBottom_toTopOf="@id/todo_save_button">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reminder_edit"
+                android:layout_width="match_parent"
+                android:drawableEnd="@drawable/ic_reminder"
+                android:layout_height="match_parent"
+                android:drawableTint="@color/blue_500"
+                android:text="@{viewModel.dateAndTimeReminder}"
+                android:inputType="textAutoComplete|textCapWords"
+                android:focusable="false"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/todo_save_button"
             android:layout_width="0dp"
@@ -122,7 +145,7 @@
             android:text="@string/save_action"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/todo_priority_radio_group" />
+            app:layout_constraintTop_toBottomOf="@+id/reminder_label" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

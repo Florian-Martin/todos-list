@@ -27,4 +27,7 @@ interface TodoDao {
 
     @Query("SELECT * FROM Todo WHERE id = :id")
     fun getTodoAndCategoryById(id: Int): Flow<TodoAndCategory>
+
+    @Query("SELECT * FROM Todo ORDER BY id DESC LIMIT 1")
+    fun getLastInsertedTodo(): Todo
 }

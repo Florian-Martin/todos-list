@@ -31,6 +31,7 @@ class TodosListFragment : Fragment() {
 
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModelFactory(
+            requireActivity().application,
             (activity?.application as TodoApplication).database.todoDao(),
             (activity?.application as TodoApplication).database.todoCategoryDao()
         )
@@ -68,7 +69,7 @@ class TodosListFragment : Fragment() {
         binding.todosListRecyclerView.layoutManager = LinearLayoutManager(this.context)
 
         binding.todoAddFab.setOnClickListener {
-            todoViewModel.setTodoPriority("normal")
+            todoViewModel.resetTodo()
             val direction =
                 TodosListFragmentDirections.actionTodosListFragmentToAddOrEditTodoFragment(
                     getString(R.string.add_fragment_title),

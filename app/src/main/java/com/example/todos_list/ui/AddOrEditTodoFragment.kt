@@ -1,23 +1,21 @@
 package com.example.todos_list.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.todos_list.R
 import com.example.todos_list.TodoApplication
-import com.example.todos_list.ui.AddOrEditTodoFragmentArgs
 import com.example.todos_list.databinding.FragmentAddOrEditTodoBinding
 import com.example.todos_list.model.TodoAndCategory
 import com.example.todos_list.viewmodel.TodoViewModel
 import com.example.todos_list.viewmodel.TodoViewModelFactory
-import java.util.*
 
 class AddOrEditTodoFragment : Fragment() {
 
@@ -29,6 +27,7 @@ class AddOrEditTodoFragment : Fragment() {
     private val binding get() = _binding!!
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModelFactory(
+            requireActivity().application,
             (activity?.application as TodoApplication).database.todoDao(),
             (activity?.application as TodoApplication).database.todoCategoryDao(),
         )
@@ -51,14 +50,15 @@ class AddOrEditTodoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = todoViewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         val id = navigationArgs.todoId
 
         // Populating categories spinner
         todoViewModel.allTodoCategories.observe(this.viewLifecycleOwner) { todosCategories ->
             categoryOptions.clear()
-            todosCategories.let {
-                it.forEach {
-                    categoryOptions.add(it.name)
+            todosCategories.let { todosCategories ->
+                todosCategories.forEach { todoCategory ->
+                    categoryOptions.add(todoCategory.name)
                 }
 
                 val adapter = ArrayAdapter(
@@ -70,14 +70,13 @@ class AddOrEditTodoFragment : Fragment() {
             }
         }
         binding.todoSaveButton.setOnClickListener { addNewTodo() }
+        binding.reminderEdit.setOnClickListener { showDatePickerDialog() }
 
         // Editing case
         if (id > 0) {
             todoViewModel.getTodoAndCategoryById(id).observe(this.viewLifecycleOwner) {
                 bind(it)
             }
-        } else { // Creating case
-            binding.todoSaveButton.setOnClickListener { addNewTodo() }
         }
     }
 
@@ -102,15 +101,14 @@ class AddOrEditTodoFragment : Fragment() {
     }
 
     private fun isTodoValid(): Boolean {
-        return todoViewModel.isTodoValid(
-            binding.todoNameEdit.text.toString(),
-            binding.todoCategorySpinner.selectedItemId.toString(),
-            binding.todoPriorityRadioGroup.checkedRadioButtonId
-        )
+        return todoViewModel.isNameValid(binding.todoNameEdit.text.toString())
+                && todoViewModel.isCategoryValid(binding.todoCategorySpinner.selectedItemId.toString())
+                && todoViewModel.isPriorityValid(binding.todoPriorityRadioGroup.checkedRadioButtonId)
+                && todoViewModel.isDateReminderValid(binding.reminderEdit.text.toString())
     }
 
     private fun bind(todoAndCategory: TodoAndCategory) {
-           binding.apply {
+        binding.apply {
             todoCategorySpinner.setSelection(categoryOptions.indexOf(todoAndCategory.todo.categoryName))
             todoNameEdit.setText(todoAndCategory.todo.name, TextView.BufferType.SPANNABLE)
             todoDescriptionEdit.setText(
@@ -128,19 +126,36 @@ class AddOrEditTodoFragment : Fragment() {
                 todoId,
                 binding.todoNameEdit.text.toString(),
                 binding.todoDescriptionEdit.text.toString(),
-                binding.todoCategorySpinner.selectedItem.toString())
-            val direction = AddOrEditTodoFragmentDirections.actionAddOrEditTodoFragmentToTodosListFragment()
+                binding.todoCategorySpinner.selectedItem.toString()
+            )
+            val direction =
+                AddOrEditTodoFragmentDirections.actionAddOrEditTodoFragmentToTodosListFragment()
             findNavController().navigate(direction)
         }
     }
 
     private fun setFieldsError(error: Boolean) {
+        binding.todoNameLabel.isErrorEnabled = todoViewModel.isNameValid
+        binding.reminderLabel.isErrorEnabled = todoViewModel.isReminderDateValid
         if (error) {
-            binding.todoNameLabel.isErrorEnabled = true
-            binding.todoNameLabel.error = getString(R.string.set_a_name)
+            if (!todoViewModel.isNameValid) {
+                binding.todoNameLabel.error = getString(R.string.set_a_name)
+            } else {
+                binding.todoNameLabel.error = null
+            }
+            if (!todoViewModel.isReminderDateValid) {
+                binding.reminderLabel.error = getString(R.string.set_a_valid_reminder)
+            } else {
+                binding.reminderLabel.error = null
+            }
         } else {
-            binding.todoNameLabel.isErrorEnabled = false
             binding.todoNameLabel.error = null
+            binding.reminderLabel.error = null
         }
+    }
+
+    private fun showDatePickerDialog() {
+        val newFragment = DatePickerFragment()
+        newFragment.show(parentFragmentManager, "datePicker")
     }
 }
