@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.todos_list.model.Todo
 import com.example.todos_list.model.TodoCategory
 
-@Database(entities = [Todo::class, TodoCategory::class], version = 1, exportSchema = false)
+@Database(entities = [Todo::class, TodoCategory::class], version = 2, exportSchema = false)
 abstract class TodosDatabase : RoomDatabase() {
 
     abstract fun todoDao(): TodoDao
@@ -24,7 +24,7 @@ abstract class TodosDatabase : RoomDatabase() {
                     TodosDatabase::class.java,
                     "todos"
                 )
-                    .createFromAsset("database/todos.db")
+                    .createFromAsset("database/todos_v2.db")
                     .build()
                 INSTANCE = instance
                 instance

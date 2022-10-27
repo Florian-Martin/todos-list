@@ -71,6 +71,7 @@ class AddOrEditTodoFragment : Fragment() {
         }
         binding.todoSaveButton.setOnClickListener { addNewTodo() }
         binding.reminderEdit.setOnClickListener { showDatePickerDialog() }
+        binding.cancelReminderButton.setOnClickListener { cancelReminder() }
 
         // Editing case
         if (id > 0) {
@@ -115,22 +116,25 @@ class AddOrEditTodoFragment : Fragment() {
                 todoAndCategory.todo.description,
                 TextView.BufferType.SPANNABLE
             )
-            todoSaveButton.setOnClickListener { updateTodo(todoAndCategory.todo.id) }
+            reminderEdit.setText(todoAndCategory.todo.reminder)
+            todoSaveButton.setOnClickListener { updateTodo(todoAndCategory) }
         }
     }
 
-    private fun updateTodo(todoId: Int) {
+    private fun updateTodo(todoAndCategory: TodoAndCategory) {
         if (isTodoValid()) {
             setFieldsError(false)
             todoViewModel.updateTodo(
-                todoId,
+                todoAndCategory,
                 binding.todoNameEdit.text.toString(),
                 binding.todoDescriptionEdit.text.toString(),
-                binding.todoCategorySpinner.selectedItem.toString()
+                binding.todoCategorySpinner.selectedItem.toString(),
             )
             val direction =
                 AddOrEditTodoFragmentDirections.actionAddOrEditTodoFragmentToTodosListFragment()
             findNavController().navigate(direction)
+        } else {
+            setFieldsError(true)
         }
     }
 
@@ -157,5 +161,9 @@ class AddOrEditTodoFragment : Fragment() {
     private fun showDatePickerDialog() {
         val newFragment = DatePickerFragment()
         newFragment.show(parentFragmentManager, "datePicker")
+    }
+
+    private fun cancelReminder() {
+        todoViewModel.cancelReminder()
     }
 }

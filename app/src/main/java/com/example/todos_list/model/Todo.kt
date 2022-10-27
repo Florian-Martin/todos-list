@@ -33,5 +33,8 @@ data class Todo(
     val edited: Int = 0,
 
     @ColumnInfo(name = "priority")
-    val priority: String
+    val priority: String,
+
+    @ColumnInfo(name = "reminder")
+    val reminder: String = ""
 )

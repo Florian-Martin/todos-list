@@ -45,7 +45,7 @@ class TodoDaoTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun insertTodo() = runTest {
+    fun insertTodoTest() = runTest {
         val cat = TodoCategory("work", "test")
         todoCategoryDao.insertTodoCategory(cat)
 
@@ -68,7 +68,7 @@ class TodoDaoTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun deleteTodo() = runTest {
+    fun deleteTodoTest() = runTest {
         val cat = TodoCategory("work", "test")
         todoCategoryDao.insertTodoCategory(cat)
 
@@ -92,7 +92,7 @@ class TodoDaoTest {
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun updateTodo() = runTest {
+    fun updateTodoTest() = runTest {
         val cat = TodoCategory("work", "test")
         todoCategoryDao.insertTodoCategory(cat)
 

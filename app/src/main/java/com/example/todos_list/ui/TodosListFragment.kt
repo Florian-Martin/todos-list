@@ -98,14 +98,7 @@ class TodosListFragment : Fragment() {
                             .setAction(
                                 getString(R.string.undo)
                             ) {
-                                todoViewModel.restoreTodo(
-                                    todoToDelete.todo.name,
-                                    todoToDelete.todo.description,
-                                    todoToDelete.todo.categoryName,
-                                    todoToDelete.todo.date,
-                                    todoToDelete.todo.edited,
-                                    todoToDelete.todo.priority
-                                )
+                                todoViewModel.restoreTodo(todoToDelete.todo)
                             }
                             .show()
                     }

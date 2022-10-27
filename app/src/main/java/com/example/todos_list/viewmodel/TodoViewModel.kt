@@ -52,7 +52,7 @@ class TodoViewModel(
     val isReminderDateValid: Boolean
         get() = _isReminderDateValid
 
-    private var _dateAndTimeReminder = MutableLiveData<String>("")
+    private var _dateAndTimeReminder = MutableLiveData("")
     val dateAndTimeReminder: LiveData<String>
         get() = _dateAndTimeReminder
 
@@ -72,35 +72,76 @@ class TodoViewModel(
             description = todoDescription,
             categoryName = todoCategory,
             date = getTodayDate("yyyy-MM-dd"),
-            priority = todoPriority.value!!
+            priority = todoPriority.value!!,
+            reminder = dateAndTimeReminder.value!!
         )
 
         viewModelScope.launch {
             insertTodoInDb(newTodo)
-            if (_dateAndTimeReminder.value != ""){
+            if (dateAndTimeReminder.value != "") {
                 val todo = getLastInsertedTodo()
                 scheduleReminder(todo)
             }
         }
     }
 
-    fun restoreTodo(
-        todoName: String,
-        todoDescription: String?,
-        todoCategory: String,
-        todoDate: String,
-        edited: Int,
-        todoPriority: String
-    ) {
+    fun restoreTodo(todo: Todo) {
         val todoToRestore = Todo(
-            name = todoName,
-            description = todoDescription,
-            categoryName = todoCategory,
-            date = todoDate,
-            edited = edited,
-            priority = todoPriority
+            name = todo.name,
+            description = todo.description,
+            categoryName = todo.categoryName,
+            date = todo.date,
+            edited = todo.edited,
+            priority = todo.priority,
+            reminder = todo.reminder
         )
-        viewModelScope.launch { todoDao.insertTodo(todoToRestore) }
+        viewModelScope.launch {
+            todoDao.insertTodo(todoToRestore)
+            if (dateAndTimeReminder.value != "") {
+                val todo = getLastInsertedTodo()
+                scheduleReminder(todo)
+            }
+        }
+    }
+
+    fun deleteTodo(todo: Todo) {
+        viewModelScope.launch {
+            todoDao.deleteTodo(todo)
+            cancelNotificationWorker(todo)
+            cancelReminder()
+        }
+    }
+
+    fun updateTodo(previousTodo: TodoAndCategory, name: String, description: String, category: String) {
+        val updatedTodo = getUpdatedTodo(previousTodo.todo.id, name, description, category)
+        if (previousTodo.todo.reminder != ""){
+            if (updatedTodo.reminder == ""){
+                cancelNotificationWorker(previousTodo.todo)
+            } else if (previousTodo.todo.reminder != updatedTodo.reminder){
+                cancelNotificationWorker(previousTodo.todo)
+                scheduleReminder(updatedTodo)
+            }
+        } else {
+            if (updatedTodo.reminder != ""){
+                scheduleReminder(updatedTodo)
+            }
+        }
+        viewModelScope.launch {
+            todoDao.updateTodo(updatedTodo)
+        }
+    }
+
+    private fun getUpdatedTodo(id: Int, name: String, description: String, category: String): Todo {
+        return Todo(
+            id,
+            name,
+            description,
+            category,
+            date = getTodayDate("yyyy-MM-dd"),
+            1,
+            todoPriority.value!!,
+            dateAndTimeReminder.value!!
+        )
     }
 
     /**
@@ -117,7 +158,7 @@ class TodoViewModel(
         val notificationRequest = OneTimeWorkRequestBuilder<TodoReminderNotificationWorker>()
             .setInputData(data)
             .setInitialDelay(secondsBeforeReminder, TimeUnit.SECONDS)
-            .addTag("${todo.name} notification")
+            .addTag("${todo.name} ${todo.reminder}")
             .build()
 
         workManager.enqueue(notificationRequest)
@@ -171,17 +212,17 @@ class TodoViewModel(
 
     fun resetTodo() {
         setTodoPriority("normal")
-        _dateAndTimeReminder.value = ""
+        cancelReminder()
     }
 
-    private suspend fun insertTodoInDb(todo: Todo){
-        withContext(Dispatchers.IO){
+    private suspend fun insertTodoInDb(todo: Todo) {
+        withContext(Dispatchers.IO) {
             todoDao.insertTodo(todo)
         }
     }
 
     private suspend fun getLastInsertedTodo(): Todo {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             todoDao.getLastInsertedTodo()
         }
     }
@@ -190,29 +231,12 @@ class TodoViewModel(
         return todoDao.getTodoAndCategoryById(id).asLiveData()
     }
 
-    fun deleteTodo(todo: Todo) {
-        viewModelScope.launch {
-            todoDao.deleteTodo(todo)
-        }
+    fun cancelReminder() {
+        _dateAndTimeReminder.value = ""
     }
 
-    fun updateTodo(id: Int, name: String, description: String, category: String) {
-        val updatedTodo = getUpdatedTodo(id, name, description, category)
-        viewModelScope.launch {
-            todoDao.updateTodo(updatedTodo)
-        }
-    }
-
-    private fun getUpdatedTodo(id: Int, name: String, description: String, category: String): Todo {
-        return Todo(
-            id,
-            name,
-            description,
-            category,
-            date = getTodayDate("yyyy-MM-dd"),
-            1,
-            todoPriority.value!!
-        )
+    private fun cancelNotificationWorker(todo: Todo) {
+        workManager.cancelAllWorkByTag("${todo.name} ${todo.reminder}")
     }
 }
 
