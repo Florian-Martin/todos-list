@@ -1,4 +1,4 @@
-package com.example.to_do_list.utils
+package com.example.todos_list.utils
 
 import java.text.SimpleDateFormat
 import java.util.*

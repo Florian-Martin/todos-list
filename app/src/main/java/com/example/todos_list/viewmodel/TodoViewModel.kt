@@ -5,8 +5,8 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.example.to_do_list.utils.getTimeDifference
-import com.example.to_do_list.utils.getTodayDate
+import com.example.todos_list.utils.getTimeDifference
+import com.example.todos_list.utils.getTodayDate
 import com.example.todos_list.data.TodoCategoryDao
 import com.example.todos_list.data.TodoDao
 import com.example.todos_list.model.Todo
